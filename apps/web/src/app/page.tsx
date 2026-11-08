@@ -5,7 +5,8 @@ import dynamic from 'next/dynamic';
 import ProfitDashboard from '@/components/ProfitDashboard';
 import { HotspotRecord } from '@/lib/h3-utils';
 import { supabase } from '@/lib/supabase-client';
-import { Locate, Menu, X, Sparkles, MapPin } from 'lucide-react';
+import { loadSettings } from '@/lib/settings-store';
+import { Locate, Menu, X, Sparkles, MapPin, Sliders } from 'lucide-react';
 
 // Dynamically import MapWrapper to prevent SSR WebGL canvas issues
 const MapWrapper = dynamic(() => import('@/components/MapWrapper'), {
@@ -76,6 +77,30 @@ export default function DriverMapPage() {
       );
     }
   }, []);
+
+  // Load user settings on mount and listen for dynamic updates
+  useEffect(() => {
+    const s = loadSettings();
+    if (s.defaultRadiusKm) setRadiusKm(s.defaultRadiusKm);
+
+    const onSettingsChange = (e: any) => {
+      if (e.detail?.defaultRadiusKm) {
+        setRadiusKm(e.detail.defaultRadiusKm);
+      }
+    };
+    window.addEventListener('surgepilot_settings_changed', onSettingsChange);
+    return () => window.removeEventListener('surgepilot_settings_changed', onSettingsChange);
+  }, []);
+
+  // Auto-refresh interval if configured
+  useEffect(() => {
+    const s = loadSettings();
+    if (!s.autoRefreshIntervalSeconds || s.autoRefreshIntervalSeconds <= 0) return;
+    const interval = setInterval(() => {
+      fetchHotspots();
+    }, s.autoRefreshIntervalSeconds * 1000);
+    return () => clearInterval(interval);
+  }, [fetchHotspots]);
 
   // Fetch on location or radius change
   useEffect(() => {
