@@ -16,7 +16,7 @@ import {
   Sliders,
   Radar,
 } from 'lucide-react';
-import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates } from '@/lib/h3-utils';
+import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates, calculateDistanceMeters } from '@/lib/h3-utils';
 import { loadSettings } from '@/lib/settings-store';
 import SettingsView from '@/components/SettingsView';
 
@@ -29,6 +29,7 @@ interface ProfitDashboardProps {
   isLoading: boolean;
   onRefresh: () => void;
   isRealtimeActive: boolean;
+  driverLocation?: { lat: number; lng: number };
 }
 
 export default function ProfitDashboard({
@@ -40,6 +41,7 @@ export default function ProfitDashboard({
   isLoading,
   onRefresh,
   isRealtimeActive,
+  driverLocation,
 }: ProfitDashboardProps) {
   const [activeTab, setActiveTab] = useState<'radar' | 'settings'>('radar');
 
@@ -206,21 +208,42 @@ export default function ProfitDashboard({
                       Hex {selectedHotspot.h3_index.substring(0, 8)}
                     </span>
                     <span className="text-[11px] text-zinc-400">
-                      {selectedHotspot.distance_meters
-                        ? `${(selectedHotspot.distance_meters / 1000).toFixed(1)} km away`
-                        : 'Near you'}
+                      {(() => {
+                        const destCoords = getNavigationCoordinates(selectedHotspot);
+                        const distMeters = driverLocation
+                          ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, destCoords.lat, destCoords.lng)
+                          : (selectedHotspot.distance_meters || 1200);
+                        return `${(distMeters / 1000).toFixed(1)} km away`;
+                      })()}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1 mt-1">
                     <h3 className="text-xs font-bold text-white">
                       {selectedHotspot.primary_demand_driver?.split('•')[0] || 'High Passenger Cluster'}
                     </h3>
-                    {selectedHotspot.primary_demand_driver?.includes('ETA') && (
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/50 px-2.5 py-1 rounded-lg w-fit shadow-md">
-                        <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                        {selectedHotspot.primary_demand_driver.split('•')[1]?.trim()}
-                      </span>
-                    )}
+                    {(() => {
+                      const raw = selectedHotspot.primary_demand_driver || '';
+                      const parts = raw.split('•');
+                      let etaRaw = parts[1]?.trim() ?? null;
+                      let etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
+                      let etaTime = etaMatch ? etaMatch[1] : null;
+
+                      if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|ms777/i.test(raw))) {
+                        const timeMatch = raw.match(/(\d{1,2}:\d{2})/);
+                        if (timeMatch) {
+                          etaTime = timeMatch[1];
+                        } else {
+                          etaTime = new Date(Date.now() + 15 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+                      }
+
+                      return etaTime ? (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/50 px-2.5 py-1 rounded-lg w-fit shadow-md">
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                          🛬 ETA {etaTime}
+                        </span>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
 
@@ -339,9 +362,18 @@ export default function ProfitDashboard({
                         const parts = raw.split('•');
                         const flightName = parts[0].trim();
                         const etaRaw = parts[1]?.trim() ?? null;
-                        // Extract just the time portion e.g. "🛬 ETA 09:45 PM"
-                        const etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
-                        const etaTime = etaMatch ? etaMatch[1] : null;
+                        let etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
+                        let etaTime = etaMatch ? etaMatch[1] : null;
+
+                        if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|ms777/i.test(raw))) {
+                          const timeMatch = raw.match(/(\d{1,2}:\d{2})/);
+                          if (timeMatch) {
+                            etaTime = timeMatch[1];
+                          } else {
+                            etaTime = new Date(Date.now() + 15 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                          }
+                        }
+
                         return (
                           <>
                             <div className="mt-1.5 text-xs font-semibold text-white leading-tight">
@@ -361,9 +393,13 @@ export default function ProfitDashboard({
                           H3: {item.h3_index.substring(0, 9)}
                         </span>
                         <span>
-                          {item.distance_meters
-                            ? `${(item.distance_meters / 1000).toFixed(1)} km`
-                            : `${(1 + idx * 0.8).toFixed(1)} km`}
+                          {(() => {
+                            const destCoords = getNavigationCoordinates(item);
+                            const distMeters = driverLocation
+                              ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, destCoords.lat, destCoords.lng)
+                              : (item.distance_meters || 1200);
+                            return `${(distMeters / 1000).toFixed(1)} km`;
+                          })()}
                         </span>
                       </div>
 

@@ -213,6 +213,7 @@ export default function DriverMapPage() {
           isLoading={isLoading}
           onRefresh={fetchHotspots}
           isRealtimeActive={isRealtimeActive}
+          driverLocation={driverLocation}
         />
       </aside>
 
@@ -231,6 +232,7 @@ export default function DriverMapPage() {
           isLoading={isLoading}
           onRefresh={fetchHotspots}
           isRealtimeActive={isRealtimeActive}
+          driverLocation={driverLocation}
         />
       </div>
     </main>
