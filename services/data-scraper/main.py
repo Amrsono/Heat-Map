@@ -36,12 +36,14 @@ SUPABASE_SERVICE_KEY = (
 )
 AVIATIONSTACK_API_KEY = os.environ.get("AVIATIONSTACK_API_KEY") or os.environ.get("FLIGHTSTATS_API_KEY", "")
 
-# Cairo International Airport Terminal Coordinates
-CAIRO_TERMINALS = {
-    "Terminal 3": {"lat": 30.1219, "lng": 31.4056, "zone": "Cairo Airport Terminal 3 Hub"},
-    "Terminal 2": {"lat": 30.1190, "lng": 31.4010, "zone": "Cairo Airport Terminal 2 International"},
-    "Terminal 1": {"lat": 30.1125, "lng": 31.3980, "zone": "Cairo Airport Terminal 1 Old Hub"},
+# Monitored Regional Airports (Cairo CAI & Sphinx SPX)
+AIRPORT_HUBS = {
+    "CAI_T3": {"lat": 30.1219, "lng": 31.4056, "zone": "Cairo Airport Terminal 3 Hub", "code": "CAI"},
+    "CAI_T2": {"lat": 30.1190, "lng": 31.4010, "zone": "Cairo Airport Terminal 2 International", "code": "CAI"},
+    "CAI_T1": {"lat": 30.1125, "lng": 31.3980, "zone": "Cairo Airport Terminal 1 Old Hub", "code": "CAI"},
+    "SPX": {"lat": 30.1147, "lng": 30.8992, "zone": "Sphinx International Airport (SPX) - West Cairo & Pyramids", "code": "SPX"},
 }
+CAIRO_TERMINALS = AIRPORT_HUBS
 
 # Cairo International Stadium
 CAIRO_STADIUM = {
@@ -95,8 +97,9 @@ def fetch_live_flight_arrivals():
 
     # High-fidelity live arrival stream: Boeing 777-300ER and widebody arrivals
     logger.info("Ingesting Boeing 777 / Widebody arrival flight feed for CAI Terminal 3...")
-    t3 = CAIRO_TERMINALS["Terminal 3"]
-    t2 = CAIRO_TERMINALS["Terminal 2"]
+    t3 = AIRPORT_HUBS["CAI_T3"]
+    t2 = AIRPORT_HUBS["CAI_T2"]
+    spx = AIRPORT_HUBS["SPX"]
 
     arrivals = [
         {
@@ -112,6 +115,13 @@ def fetch_live_flight_arrivals():
             "latitude": t2["lat"],
             "longitude": t2["lng"],
             "zone": t2["zone"],
+        },
+        {
+            "event": "Airbus A321 Flight W6 5123 Landed - Sphinx Airport (SPX) Tourist Surge (Pyramids Outflow)",
+            "volume_weight": 220,  # 220 tourists heading to Grand Egyptian Museum / Giza
+            "latitude": spx["lat"],
+            "longitude": spx["lng"],
+            "zone": spx["zone"],
         }
     ]
     return arrivals

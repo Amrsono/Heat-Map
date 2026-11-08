@@ -56,6 +56,7 @@ def run_vertex_ai_inference_pipeline():
     # 2. Monitored metropolitan transit nodes
     candidate_centers = [
         {"name": "Cairo Airport Terminal 3 Hub", "lat": 30.1219, "lng": 31.4056, "driver": "Widebody Flight MS777 Landed - Terminal 3 Peak"},
+        {"name": "Sphinx International Airport (SPX)", "lat": 30.1147, "lng": 30.8992, "driver": "Wizz Air / Gulf Flights Landed - Giza Pyramids Tourist Outflow"},
         {"name": "Cairo International Stadium", "lat": 30.0694, "lng": 31.3122, "driver": "Derby Match 88' Minute Final - Stadium Crowd Outflow"},
         {"name": "Downtown Tahrir Central Hub", "lat": 30.0444, "lng": 31.2357, "driver": "Metro Commuter & Evening Commercial Influx"},
         {"name": "New Cairo Tech District", "lat": 30.0074, "lng": 31.4913, "driver": "Tech Hub Evening Shift Departure"},

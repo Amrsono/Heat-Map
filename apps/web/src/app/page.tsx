@@ -24,6 +24,7 @@ const MapWrapper = dynamic(() => import('@/components/MapWrapper'), {
 const DEMO_PRESETS = [
   { name: 'Cairo Downtown', lat: 30.0444, lng: 31.2357 },
   { name: 'Cairo Airport (CAI)', lat: 30.1219, lng: 31.4056 },
+  { name: 'Sphinx Airport (SPX)', lat: 30.1147, lng: 30.8992 },
   { name: 'Cairo Intl Stadium', lat: 30.0694, lng: 31.3122 },
   { name: 'New Cairo Tech Hub', lat: 30.0074, lng: 31.4913 },
 ];
