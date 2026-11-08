@@ -124,6 +124,23 @@ export function calculateDistanceMeters(lat1: number, lon1: number, lat2: number
 }
 
 /**
+ * Checks if a hotspot record is a flight notification.
+ */
+export function isFlightHotspot(hotspot: HotspotRecord): boolean {
+  const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
+  return /flight|airline|aviation|ms\d+|ek\d+|w\d+|w9\d+|arriving|landed|scheduled/i.test(driver);
+}
+
+/**
+ * Extracts flight number or code from demand driver description.
+ */
+export function extractFlightNumber(hotspot: HotspotRecord): string {
+  const driver = hotspot.primary_demand_driver || '';
+  const match = driver.match(/(?:flight[:\s]*|wizz\s+air\s*)?([A-Z0-9]{2,4}\s*\d{2,5})/i);
+  return match ? match[1].trim() : 'Flight';
+}
+
+/**
  * Converts a list of Hotspot records into GeoJSON FeatureCollection
  * of H3 Resolution 8 hexagons.
  */

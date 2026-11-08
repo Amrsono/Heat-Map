@@ -15,8 +15,9 @@ import {
   ArrowUpRight,
   Sliders,
   Radar,
+  ExternalLink,
 } from 'lucide-react';
-import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates, calculateDistanceMeters } from '@/lib/h3-utils';
+import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates, calculateDistanceMeters, isFlightHotspot, extractFlightNumber } from '@/lib/h3-utils';
 import { loadSettings } from '@/lib/settings-store';
 import SettingsView from '@/components/SettingsView';
 
@@ -66,6 +67,18 @@ export default function ProfitDashboard({
       url = `maps://?daddr=${coords.lat},${coords.lng}`;
     }
     window.open(url, '_blank');
+  };
+
+  const handleCheckStatus = (hotspot: HotspotRecord) => {
+    const flightNum = extractFlightNumber(hotspot);
+    const query = encodeURIComponent(`flight ${flightNum} status`);
+    window.open(`https://www.google.com/search?q=${query}`, '_blank');
+  };
+
+  const handleTrackFlight = (hotspot: HotspotRecord) => {
+    const flightNum = extractFlightNumber(hotspot);
+    const query = encodeURIComponent(`track flight ${flightNum} flightradar24`);
+    window.open(`https://www.google.com/search?q=${query}`, '_blank');
   };
 
   return (
@@ -298,6 +311,26 @@ export default function ProfitDashboard({
                   Dismiss
                 </button>
               </div>
+
+              {/* Flight Status & Tracking Action Buttons */}
+              {isFlightHotspot(selectedHotspot) && (
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleCheckStatus(selectedHotspot)}
+                    className="py-1.5 px-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-cyan-600/20"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Check Status
+                  </button>
+                  <button
+                    onClick={() => handleTrackFlight(selectedHotspot)}
+                    className="py-1.5 px-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-600/20"
+                  >
+                    <Radar className="w-3 h-3" />
+                    Track Flight
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -402,6 +435,26 @@ export default function ProfitDashboard({
                           })()}
                         </span>
                       </div>
+
+                      {/* Flight Status & Tracking Action Buttons */}
+                      {isFlightHotspot(item) && (
+                        <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center gap-1.5">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleCheckStatus(item); }}
+                            className="flex-1 py-1 px-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 transition-all"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5" />
+                            Check Status
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleTrackFlight(item); }}
+                            className="flex-1 py-1 px-2 bg-blue-950/80 hover:bg-blue-900 border border-blue-500/40 text-blue-300 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 transition-all"
+                          >
+                            <Radar className="w-2.5 h-2.5" />
+                            Track Flight
+                          </button>
+                        </div>
+                      )}
 
                       {/* Multi-platform micro bar */}
                       <div className="mt-2 pt-1.5 border-t border-white/5 grid grid-cols-3 gap-1 text-[9px]">
