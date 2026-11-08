@@ -30,16 +30,33 @@ CREATE INDEX IF NOT EXISTS idx_live_hotspots_coefficient ON public.live_profit_h
 ALTER TABLE public.urban_hex_grids ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.live_profit_hotspots ENABLE ROW LEVEL SECURITY;
 
--- Drop previous policies if re-running to avoid duplicate errors
+-- Clean existing policies to avoid duplicates
 DROP POLICY IF EXISTS "Allow public read urban_hex_grids" ON public.urban_hex_grids;
-DROP POLICY IF EXISTS "Allow public read live_profit_hotspots" ON public.live_profit_hotspots;
+DROP POLICY IF EXISTS "Allow public insert urban_hex_grids" ON public.urban_hex_grids;
+DROP POLICY IF EXISTS "Allow public update urban_hex_grids" ON public.urban_hex_grids;
 
--- Read policies: allow public anonymous or authenticated driver clients to query heatmaps
+DROP POLICY IF EXISTS "Allow public read live_profit_hotspots" ON public.live_profit_hotspots;
+DROP POLICY IF EXISTS "Allow public insert live_profit_hotspots" ON public.live_profit_hotspots;
+DROP POLICY IF EXISTS "Allow public update live_profit_hotspots" ON public.live_profit_hotspots;
+
+-- Read & Write policies for scraper ingestion & edge retrieval
 CREATE POLICY "Allow public read urban_hex_grids" 
     ON public.urban_hex_grids FOR SELECT USING (true);
 
+CREATE POLICY "Allow public insert urban_hex_grids" 
+    ON public.urban_hex_grids FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public update urban_hex_grids" 
+    ON public.urban_hex_grids FOR UPDATE USING (true);
+
 CREATE POLICY "Allow public read live_profit_hotspots" 
     ON public.live_profit_hotspots FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert live_profit_hotspots" 
+    ON public.live_profit_hotspots FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public update live_profit_hotspots" 
+    ON public.live_profit_hotspots FOR UPDATE USING (true);
 
 -- 6. Stored Procedure (RPC) to retrieve nearby hotspots sorted by profit multiplier
 CREATE OR REPLACE FUNCTION public.get_nearby_hotspots(
