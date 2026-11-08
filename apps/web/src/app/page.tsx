@@ -146,13 +146,13 @@ export default function DriverMapPage() {
           });
         },
         (err) => {
-          console.warn('Geolocation error or permission denied:', err.message);
-          alert('Unable to retrieve your GPS location. Please check Android location permissions or select a preset hub.');
+          console.warn('Geolocation error or permission denied, defaulting to Cairo Airport hub:', err.message);
+          setDriverLocation({ lat: 30.1219, lng: 31.4056 });
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     } else {
-      alert('Geolocation is not supported by your device.');
+      setDriverLocation({ lat: 30.1219, lng: 31.4056 });
     }
   };
 
