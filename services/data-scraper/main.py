@@ -142,59 +142,17 @@ def fetch_live_flight_arrivals():
     ]
     return arrivals
 
-def fetch_stadium_match_outflows():
-    """
-    Step 2: Scrapes / parses stadium match schedules for Cairo International Stadium.
-    When match reaches minute 85 or finishes, triggers extreme surge alert.
-    """
-    logger.info("Scraping Cairo International Stadium event calendar & live match logs...")
-    
-    # BeautifulSoup parsing simulation of live football match board
-    sample_stadium_html = """
-    <div class="match-center" data-stadium="Cairo International Stadium">
-        <div class="fixture">
-            <span class="home-team">Al Ahly SC</span> vs <span class="away-team">Zamalek SC</span>
-        </div>
-        <div class="match-time" data-minute="88" data-attendance="68000">
-            <span class="status">88' - Late Game Match Outflow Approaching</span>
-        </div>
-    </div>
-    """
-    soup = BeautifulSoup(sample_stadium_html, "html.parser")
-    match_div = soup.find("div", class_="match-center")
-    
-    events = []
-    if match_div:
-        minute_elem = match_div.find("div", class_="match-time")
-        minute = int(minute_elem.get("data-minute", 85))
-        attendance = int(minute_elem.get("data-attendance", 65000))
-        
-        # When minute >= 85, 68,000 spectators begin flooding the streets
-        if minute >= 85:
-            events.append({
-                "event": f"Live Championship Match 88' Minute Ending - Stadium Crowd Outflow ({attendance:,} Spectators)",
-                "volume_weight": 350, # Highest urgency multiplier weight
-                "latitude": CAIRO_STADIUM["lat"],
-                "longitude": CAIRO_STADIUM["lng"],
-                "zone": CAIRO_STADIUM["zone"]
-            })
-    return events
-
 def ingest_transit_demand_metrics(request=None):
     """
     GCP Cloud Function entrypoint:
-    Aggregates flight arrivals and stadium events, projects them into Uber H3 Resolution 8,
-    and updates live Supabase PostGIS records.
+    Aggregates flight arrivals and real transport metrics, projects them into Uber H3 Resolution 8,
+    and updates live Supabase PostGIS records (Zero fake events or matches).
     """
     logger.info("Starting ingest_transit_demand_metrics pipeline...")
 
-    # 1. Ingest real flight arrivals
-    flight_events = fetch_live_flight_arrivals()
+    # 1. Ingest real flight arrivals only
+    all_events = fetch_live_flight_arrivals()
 
-    # 2. Ingest stadium match outflows
-    stadium_events = fetch_stadium_match_outflows()
-
-    all_events = flight_events + stadium_events
     processed_records = []
     now_iso = datetime.now(timezone.utc).isoformat()
 

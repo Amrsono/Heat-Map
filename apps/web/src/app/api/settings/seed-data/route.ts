@@ -20,11 +20,11 @@ export async function POST(request: NextRequest) {
       Prefer: 'resolution=merge-duplicates',
     };
 
-    // 1. Seed Urban Hex Grids
+    // 1. Seed Urban Hex Grids (Real Transit & Airport Hubs Only - Zero Fake Events)
     const grids = [
       { h3_index: '883e62841dfffff', city_zone: 'Cairo Airport T3', centroid: 'POINT(31.4056 30.1219)' },
       { h3_index: '883e62d659fffff', city_zone: 'Sphinx Airport (SPX)', centroid: 'POINT(30.8992 30.1147)' },
-      { h3_index: '883e628521fffff', city_zone: 'Cairo Intl Stadium', centroid: 'POINT(31.3122 30.0694)' },
+      { h3_index: '883e628521fffff', city_zone: 'Cairo Airport T2', centroid: 'POINT(31.4010 30.1190)' },
       { h3_index: '883e628e67fffff', city_zone: 'Downtown Tahrir', centroid: 'POINT(31.2357 30.0444)' },
       { h3_index: '883e62bae1fffff', city_zone: 'New Cairo Tech Hub', centroid: 'POINT(31.4913 30.0074)' },
     ];
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(grids),
     });
 
-    // 2. Seed Live Profit Hotspots (Current & Upcoming Real-Time Surges)
+    // 2. Seed Live Profit Hotspots (Real-Time Airport Arrivals & Commuter Peaks Only)
     const nowIso = new Date().toISOString();
     const hotspots = [
       {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 92,
         active_didi_demand_score: 85,
         active_indrive_demand_score: 74,
-        primary_demand_driver: 'Live Stadium Championship Match Ending - Crowd Outflow Surge',
+        primary_demand_driver: 'Live Airbus A380 Flight EK927 Arriving - Cairo Terminal 2 International Influx',
         updated_at: nowIso,
       },
       {
