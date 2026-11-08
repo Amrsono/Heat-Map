@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
     const driverLng = parseFloat(lng);
     const searchRadiusMeters = parseFloat(radiusKm) * 1000;
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     // If Supabase credentials are configured, query PostGIS RPC get_nearby_hotspots
     if (supabaseUrl && supabaseKey) {
