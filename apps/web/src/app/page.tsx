@@ -138,12 +138,21 @@ export default function DriverMapPage() {
 
   const handleRecenter = () => {
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setDriverLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setDriverLocation({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        (err) => {
+          console.warn('Geolocation error or permission denied:', err.message);
+          alert('Unable to retrieve your GPS location. Please check Android location permissions or select a preset hub.');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    } else {
+      alert('Geolocation is not supported by your device.');
     }
   };
 
