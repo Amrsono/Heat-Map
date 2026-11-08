@@ -90,8 +90,8 @@ export function getBestPlatform(item: HotspotRecord): 'Uber' | 'DiDi' | 'inDrive
 export function getNavigationCoordinates(hotspot: HotspotRecord): { lat: number; lng: number } {
   const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
 
-  // Check for Sphinx Airport (SPX) / W6 / Pyramids
-  if (driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6') || driver.includes('pyramids')) {
+  // Check for Sphinx Airport (SPX) / W6 / Pyramids / Giza
+  if (driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6') || driver.includes('pyramids') || driver.includes('giza') || (hotspot.latitude && Math.abs(hotspot.latitude - 30.1147) < 0.05 && hotspot.longitude && Math.abs(hotspot.longitude - 30.8992) < 0.05)) {
     return { lat: 30.1147, lng: 30.8992 }; // Sphinx International Airport (SPX)
   }
   // Check for Terminal 2 / EK927
