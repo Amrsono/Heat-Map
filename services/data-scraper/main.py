@@ -56,42 +56,41 @@ CAIRO_STADIUM = {
 def fetch_live_flight_arrivals():
     """
     Step 1: Ingests real flight arrival patterns.
-    Uses AviationStack API if API key is provided, with high-fidelity Boeing 777 live stream fallback.
+    Uses AviationStack API for both Cairo International (CAI) and Sphinx International (SPX).
     """
-    logger.info("Checking live flight arrival feeds for Cairo International Airport (CAI)...")
+    logger.info("Checking live flight arrival feeds for Cairo (CAI) and Sphinx (SPX)...")
     arrivals = []
 
     if AVIATIONSTACK_API_KEY:
         try:
             url = "http://api.aviationstack.com/v1/flights"
-            params = {
-                "access_key": AVIATIONSTACK_API_KEY,
-                "arr_iata": "CAI",
-                "limit": 10
-            }
-            res = requests.get(url, params=params, timeout=8)
-            if res.status_code == 200:
-                data = res.json().get("data", [])
-                for f in data:
-                    flight_num = f.get("flight", {}).get("iata", "MS777")
-                    origin = f.get("departure", {}).get("airport", "JFK International")
-                    terminal = f.get("arrival", {}).get("terminal", "3")
-                    term_key = f"Terminal {terminal}" if f"Terminal {terminal}" in CAIRO_TERMINALS else "Terminal 3"
-                    coords = CAIRO_TERMINALS[term_key]
+            for airport_code, hub_key in [("CAI", "CAI_T3"), ("SPX", "SPX")]:
+                params = {
+                    "access_key": AVIATIONSTACK_API_KEY,
+                    "arr_iata": airport_code,
+                    "limit": 3
+                }
+                res = requests.get(url, params=params, timeout=10)
+                if res.status_code == 200:
+                    data = res.json().get("data", [])
+                    for f in data:
+                        airline = f.get("airline", {}).get("name", "Commercial")
+                        flight_num = f.get("flight", {}).get("iata") or f.get("flight", {}).get("number", "Flight")
+                        origin = f.get("departure", {}).get("airport", "International Departure")
+                        status = f.get("flight_status", "Active").title()
+                        coords = AIRPORT_HUBS[hub_key]
+                        pax_est = 220 if airport_code == "SPX" else 280
 
-                    # Estimate passengers based on flight volume
-                    pax_est = 290 if "777" in flight_num or "B77" in str(f) else 180
-
-                    arrivals.append({
-                        "event": f"Flight {flight_num} from {origin} Landed ({term_key} Arrival Rush)",
-                        "volume_weight": pax_est,
-                        "latitude": coords["lat"],
-                        "longitude": coords["lng"],
-                        "zone": coords["zone"],
-                    })
-                if arrivals:
-                    logger.info(f"Retrieved {len(arrivals)} real flight arrivals from AviationStack API.")
-                    return arrivals
+                        arrivals.append({
+                            "event": f"Live Flight: {airline} {flight_num} from {origin} ({airport_code} Arrival - {status})",
+                            "volume_weight": pax_est,
+                            "latitude": coords["lat"],
+                            "longitude": coords["lng"],
+                            "zone": coords["zone"],
+                        })
+            if arrivals:
+                logger.info(f"Retrieved {len(arrivals)} real live flights from AviationStack for CAI and SPX.")
+                return arrivals
         except Exception as err:
             logger.warning(f"AviationStack API lookup failed, switching to live operational stream: {err}")
 
