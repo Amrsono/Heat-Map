@@ -71,7 +71,7 @@ export default function ProfitDashboard({
 
   const isSphinxHotspot = (hotspot: HotspotRecord) => {
     const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
-    return driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6') || driver.includes('pyramids') || driver.includes('giza') || (hotspot.latitude && Math.abs(hotspot.latitude - 30.1147) < 0.05);
+    return driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6') || driver.includes('pyramids') || driver.includes('giza');
   };
 
   const handleCheckStatus = (hotspot: HotspotRecord) => {
@@ -81,13 +81,8 @@ export default function ProfitDashboard({
 
   const handleTrackFlight = (hotspot: HotspotRecord) => {
     const flightNum = extractFlightNumber(hotspot);
-    const airportCode = isSphinxHotspot(hotspot) ? 'spx' : 'cai';
-
-    if (flightNum && flightNum !== 'Flight') {
-      window.open(`https://www.flightradar24.com/data/flights/${flightNum.toLowerCase()}`, '_blank');
-    } else {
-      window.open(`https://www.flightradar24.com/data/airports/${airportCode}`, '_blank');
-    }
+    const query = encodeURIComponent(`track flight ${flightNum} flightradar24`);
+    window.open(`https://www.google.com/search?q=${query}`, '_blank');
   };
 
   return (
