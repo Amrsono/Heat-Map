@@ -125,27 +125,20 @@ def fetch_live_flight_arrivals():
     eta3 = (now_cairo + timedelta(minutes=40)).strftime('%I:%M %p')
 
     arrivals = [
-        {
-            "event": f"Qatar Airways Flight QR1301 Arriving from Doha (DOH) • 🛬 ETA {eta1} - Cairo Terminal 3 Arrival Rush",
-            "volume_weight": 310,  # 310 passengers exiting customs
-            "latitude": t3["lat"],
-            "longitude": t3["lng"],
-            "zone": t3["zone"],
-        },
-        {
-            "event": f"Emirates Airbus A380 Flight EK927 Arriving from Dubai (DXB) • 🛬 ETA {eta2} - Cairo Terminal 2 International Arrival Rush",
-            "volume_weight": 420,  # 420 passengers exiting
-            "latitude": t2["lat"],
-            "longitude": t2["lng"],
-            "zone": t2["zone"],
-        },
-        {
-            "event": f"Wizz Air Flight W6 2307 Arriving from Budapest (BUD) • 🛬 ETA {eta3} - Sphinx Airport (SPX) Pyramids Tourist Influx",
-            "volume_weight": 220,  # 220 tourists heading to Grand Egyptian Museum / Giza
-            "latitude": spx["lat"],
-            "longitude": spx["lng"],
-            "zone": spx["zone"],
-        }
+        {"event": f"EgyptAir Flight MS25 Arriving from Sharm el-Sheikh • 🛬 ETA {(now_cairo + timedelta(minutes=5)).strftime('%I:%M %p')} - Cairo Terminal 3 Domestic Arrival", "volume_weight": 180, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"EgyptAir Flight MS792 Arriving from Rome (FCO) • 🛬 ETA {(now_cairo + timedelta(minutes=15)).strftime('%I:%M %p')} - Cairo Terminal 3 International Arrival", "volume_weight": 260, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"EgyptAir Flight MS915 Arriving from Abu Dhabi (AUH) • 🛬 ETA {(now_cairo + timedelta(minutes=20)).strftime('%I:%M %p')} - Cairo Terminal 3 Arrival Rush", "volume_weight": 290, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"EgyptAir Flight MS75 Arriving from Luxor • 🛬 ETA {(now_cairo + timedelta(minutes=25)).strftime('%I:%M %p')} - Cairo Terminal 3 Domestic Arrival", "volume_weight": 170, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"EgyptAir Flight MS913 Arriving from Dubai (DXB) • 🛬 ETA {(now_cairo + timedelta(minutes=30)).strftime('%I:%M %p')} - Cairo Terminal 3 Peak Arrival", "volume_weight": 340, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"Wizz Air Flight W6 2307 Arriving from Budapest (BUD) • 🛬 ETA {(now_cairo + timedelta(minutes=35)).strftime('%I:%M %p')} - Sphinx Airport (SPX) Pyramids Tourist Influx", "volume_weight": 220, "latitude": spx["lat"], "longitude": spx["lng"], "zone": spx["zone"]},
+        {"event": f"Nesma Airlines Flight NE713 Arriving from Munich (MUC) • 🛬 ETA {(now_cairo + timedelta(minutes=38)).strftime('%I:%M %p')} - Cairo Terminal 1 Arrival", "volume_weight": 210, "latitude": AIRPORT_HUBS["CAI_T1"]["lat"], "longitude": AIRPORT_HUBS["CAI_T1"]["lng"], "zone": AIRPORT_HUBS["CAI_T1"]["zone"]},
+        {"event": f"EgyptAir Flight MS846 Arriving from Algiers (ALG) • 🛬 ETA {(now_cairo + timedelta(minutes=45)).strftime('%I:%M %p')} - Cairo Terminal 3 Arrival", "volume_weight": 240, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"Air Cairo Flight SM602 Arriving from Cologne (CGN) • 🛬 ETA {(now_cairo + timedelta(minutes=48)).strftime('%I:%M %p')} - Cairo Terminal 1 Arrival", "volume_weight": 190, "latitude": AIRPORT_HUBS["CAI_T1"]["lat"], "longitude": AIRPORT_HUBS["CAI_T1"]["lng"], "zone": AIRPORT_HUBS["CAI_T1"]["zone"]},
+        {"event": f"Iraqi Airways Flight IA103 Arriving from Kirkuk (KIK) • 🛬 ETA {(now_cairo + timedelta(minutes=52)).strftime('%I:%M %p')} - Cairo Terminal 2 Arrival", "volume_weight": 220, "latitude": t2["lat"], "longitude": t2["lng"], "zone": t2["zone"]},
+        {"event": f"Jordan Aviation Flight R5811 Arriving from Amman (AMM) • 🛬 ETA {(now_cairo + timedelta(minutes=55)).strftime('%I:%M %p')} - Cairo Terminal 1 Arrival", "volume_weight": 180, "latitude": AIRPORT_HUBS["CAI_T1"]["lat"], "longitude": AIRPORT_HUBS["CAI_T1"]["lng"], "zone": AIRPORT_HUBS["CAI_T1"]["zone"]},
+        {"event": f"Saudia Flight SV303 Arriving from Jeddah (JED) • 🛬 ETA {(now_cairo + timedelta(minutes=58)).strftime('%I:%M %p')} - Cairo Terminal 2 Arrival Rush", "volume_weight": 320, "latitude": t2["lat"], "longitude": t2["lng"], "zone": t2["zone"]},
+        {"event": f"EgyptAir Flight MS704 Arriving from Milan (MXP) • 🛬 ETA {(now_cairo + timedelta(minutes=65)).strftime('%I:%M %p')} - Cairo Terminal 3 Arrival", "volume_weight": 250, "latitude": t3["lat"], "longitude": t3["lng"], "zone": t3["zone"]},
+        {"event": f"Saudia Flight SV313 Arriving from Riyadh (RUH) • 🛬 ETA {(now_cairo + timedelta(minutes=70)).strftime('%I:%M %p')} - Cairo Terminal 2 Arrival", "volume_weight": 300, "latitude": t2["lat"], "longitude": t2["lng"], "zone": t2["zone"]},
     ]
     return arrivals
 
