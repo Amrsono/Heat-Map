@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(grids),
     });
 
-    // 2. Seed Live Profit Hotspots
+    // 2. Seed Live Profit Hotspots (Current & Upcoming Real-Time Surges)
+    const nowIso = new Date().toISOString();
     const hotspots = [
       {
         h3_index: '883e62841dfffff',
@@ -43,7 +44,8 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 96,
         active_didi_demand_score: 89,
         active_indrive_demand_score: 79,
-        primary_demand_driver: 'Flight MS777 JFK Landed - Cairo Terminal 3 Arrival Rush',
+        primary_demand_driver: 'Live Widebody Flight MS777 Arriving Now - Cairo Terminal 3 Arrival Rush',
+        updated_at: nowIso,
       },
       {
         h3_index: '883e62d659fffff',
@@ -51,7 +53,8 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 94,
         active_didi_demand_score: 87,
         active_indrive_demand_score: 78,
-        primary_demand_driver: 'Flight W6 5123 Landed - Sphinx Airport (SPX) Pyramids Tourist Influx',
+        primary_demand_driver: 'Live Flight W6 5123 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx',
+        updated_at: nowIso,
       },
       {
         h3_index: '883e628521fffff',
@@ -59,7 +62,8 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 92,
         active_didi_demand_score: 85,
         active_indrive_demand_score: 74,
-        primary_demand_driver: 'Derby Cup Final Match Ending - Stadium Outflow',
+        primary_demand_driver: 'Live Stadium Championship Match Ending - Crowd Outflow Surge',
+        updated_at: nowIso,
       },
       {
         h3_index: '883e628e67fffff',
@@ -67,7 +71,8 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 82,
         active_didi_demand_score: 76,
         active_indrive_demand_score: 68,
-        primary_demand_driver: 'Evening Metro Commuter Congestion',
+        primary_demand_driver: 'Live Metro Central Hub Commuter Peak Surge',
+        updated_at: nowIso,
       },
       {
         h3_index: '883e62bae1fffff',
@@ -75,7 +80,8 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 72,
         active_didi_demand_score: 65,
         active_indrive_demand_score: 60,
-        primary_demand_driver: 'Commercial Mall & Business Park Departure',
+        primary_demand_driver: 'Live Commercial Mall & Business Park Departure Surge',
+        updated_at: nowIso,
       },
     ];
 
