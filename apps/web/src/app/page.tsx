@@ -7,6 +7,7 @@ import SJSplashScreen from '@/components/SJSplashScreen';
 import { HotspotRecord } from '@/lib/h3-utils';
 import { supabase } from '@/lib/supabase-client';
 import { loadSettings } from '@/lib/settings-store';
+import { Geolocation } from '@capacitor/geolocation';
 import { Locate, Menu, X, Sparkles, MapPin, Sliders } from 'lucide-react';
 
 // Dynamically import MapWrapper to prevent SSR WebGL canvas issues
@@ -63,8 +64,24 @@ export default function DriverMapPage() {
     }
   }, [driverLocation.lat, driverLocation.lng, radiusKm]);
 
-  // Request driver geolocation on initial mount
-  useEffect(() => {
+  const requestLocationAndCenter = async () => {
+    try {
+      const permission = await Geolocation.requestPermissions();
+      if (permission.location === 'granted' || permission.coarseLocation === 'granted') {
+        const coordinates = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000
+        });
+        setDriverLocation({
+          lat: coordinates.coords.latitude,
+          lng: coordinates.coords.longitude,
+        });
+        return;
+      }
+    } catch (e) {
+      console.warn('Capacitor Geolocation permission request failed:', e);
+    }
+
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -74,11 +91,16 @@ export default function DriverMapPage() {
           });
         },
         (err) => {
-          console.warn('Geolocation access declined, using default metropolitan hub:', err.message);
+          console.warn('Browser geolocation failed:', err.message);
         },
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     }
+  };
+
+  // Request driver geolocation on initial mount
+  useEffect(() => {
+    requestLocationAndCenter();
   }, []);
 
   // Load user settings on mount and listen for dynamic updates
@@ -137,23 +159,7 @@ export default function DriverMapPage() {
   }, [fetchHotspots]);
 
   const handleRecenter = () => {
-    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setDriverLocation({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-        },
-        (err) => {
-          console.warn('Geolocation error or permission denied, defaulting to Cairo Airport hub:', err.message);
-          setDriverLocation({ lat: 30.1219, lng: 31.4056 });
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    } else {
-      setDriverLocation({ lat: 30.1219, lng: 31.4056 });
-    }
+    requestLocationAndCenter();
   };
 
   return (
