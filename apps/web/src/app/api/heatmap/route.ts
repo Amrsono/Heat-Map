@@ -86,9 +86,9 @@ export async function GET(request: NextRequest) {
     const eta3 = new Date(nowTime.getTime() + 40 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const mockDrivers = [
-      `Flight MS777 Arriving • 🛬 ETA ${eta1} - Cairo Terminal 3 Arrival Rush`,
-      `Flight W6 5123 Arriving • 🛬 ETA ${eta2} - Sphinx Airport Pyramids Influx`,
-      `Airbus A380 Flight EK927 Arriving • 🛬 ETA ${eta3} - Cairo Terminal 2 International Influx`,
+      `EgyptAir Flight MS777 Arriving from JFK • 🛬 ETA ${eta1} - Cairo International Terminal 3 Arrival Rush`,
+      `Wizz Air Flight W6 2307 Arriving from Budapest • 🛬 ETA ${eta2} - Sphinx Airport (SPX) Pyramids Influx`,
+      `Emirates Flight EK927 Arriving from Dubai • 🛬 ETA ${eta3} - Cairo International Terminal 2 International Arrival`,
       `Metro Central Hub Commuter Peak • Active Transit Influx`,
       `Tech District Evening Departure • Business Park Surge`,
       `Commercial Mall & Business Park Exit • Peak Traffic`

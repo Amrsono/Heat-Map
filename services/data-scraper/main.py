@@ -126,21 +126,21 @@ def fetch_live_flight_arrivals():
 
     arrivals = [
         {
-            "event": f"Boeing 777-300ER Flight MS777 Arriving • 🛬 ETA {eta1} - Terminal 3 Arrival Rush (JFK Outflow)",
+            "event": f"EgyptAir Boeing 777 Flight MS777 Arriving from New York (JFK) • 🛬 ETA {eta1} - Cairo Terminal 3 Arrival Rush",
             "volume_weight": 310,  # 310 passengers exiting customs
             "latitude": t3["lat"],
             "longitude": t3["lng"],
             "zone": t3["zone"],
         },
         {
-            "event": f"Airbus A380 Flight EK927 Arriving • 🛬 ETA {eta2} - Terminal 2 International Arrival Rush",
+            "event": f"Emirates Airbus A380 Flight EK927 Arriving from Dubai (DXB) • 🛬 ETA {eta2} - Cairo Terminal 2 International Arrival Rush",
             "volume_weight": 420,  # 420 passengers exiting
             "latitude": t2["lat"],
             "longitude": t2["lng"],
             "zone": t2["zone"],
         },
         {
-            "event": f"Airbus A321 Flight W6 5123 Arriving • 🛬 ETA {eta3} - Sphinx Airport (SPX) Tourist Surge (Pyramids Outflow)",
+            "event": f"Wizz Air Flight W6 2307 Arriving from Budapest (BUD) • 🛬 ETA {eta3} - Sphinx Airport (SPX) Pyramids Tourist Influx",
             "volume_weight": 220,  # 220 tourists heading to Grand Egyptian Museum / Giza
             "latitude": spx["lat"],
             "longitude": spx["lng"],

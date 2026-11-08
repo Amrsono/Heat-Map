@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 96,
         active_didi_demand_score: 89,
         active_indrive_demand_score: 79,
-        primary_demand_driver: 'Live Widebody Flight MS777 Arriving Now - Cairo Terminal 3 Arrival Rush',
+        primary_demand_driver: 'Live EgyptAir Flight MS777 Arriving from New York (JFK) - Cairo Terminal 3 Arrival Rush',
         updated_at: nowIso,
       },
       {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 94,
         active_didi_demand_score: 87,
         active_indrive_demand_score: 78,
-        primary_demand_driver: 'Live Flight W6 5123 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx',
+        primary_demand_driver: 'Live Wizz Air Flight W6 2307 Arriving from Budapest (BUD) - Sphinx Airport (SPX) Pyramids Tourist Influx',
         updated_at: nowIso,
       },
       {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 92,
         active_didi_demand_score: 85,
         active_indrive_demand_score: 74,
-        primary_demand_driver: 'Live Airbus A380 Flight EK927 Arriving - Cairo Terminal 2 International Influx',
+        primary_demand_driver: 'Live Emirates Flight EK927 Arriving from Dubai (DXB) - Cairo Terminal 2 International Influx',
         updated_at: nowIso,
       },
       {
