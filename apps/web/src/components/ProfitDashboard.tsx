@@ -210,9 +210,17 @@ export default function ProfitDashboard({
                         : 'Near you'}
                     </span>
                   </div>
-                  <h3 className="text-xs font-bold text-white mt-1">
-                    {selectedHotspot.primary_demand_driver || 'High Passenger Cluster'}
-                  </h3>
+                  <div className="flex flex-col gap-1 mt-1">
+                    <h3 className="text-xs font-bold text-white">
+                      {selectedHotspot.primary_demand_driver?.split('•')[0] || 'High Passenger Cluster'}
+                    </h3>
+                    {selectedHotspot.primary_demand_driver?.includes('ETA') && (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/50 px-2.5 py-1 rounded-lg w-fit shadow-md">
+                        <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                        {selectedHotspot.primary_demand_driver.split('•')[1]?.trim()}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="text-right">
@@ -325,9 +333,27 @@ export default function ProfitDashboard({
                         </div>
                       </div>
 
-                      <div className="mt-1.5 text-xs font-semibold text-white truncate">
-                        {item.primary_demand_driver || 'Zone Demand Influx'}
-                      </div>
+                      {(() => {
+                        const raw = item.primary_demand_driver || 'Zone Demand Influx';
+                        const parts = raw.split('•');
+                        const flightName = parts[0].trim();
+                        const etaRaw = parts[1]?.trim() ?? null;
+                        // Extract just the time portion e.g. "🛬 ETA 09:45 PM"
+                        const etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
+                        const etaTime = etaMatch ? etaMatch[1] : null;
+                        return (
+                          <>
+                            <div className="mt-1.5 text-xs font-semibold text-white leading-tight">
+                              {flightName}
+                            </div>
+                            {etaTime && (
+                              <div className="mt-1 inline-flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
+                                🛬 ETA {etaTime}
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
 
                       <div className="mt-0.5 flex items-center justify-between text-[10px] text-zinc-400">
                         <span className="font-mono text-zinc-500">
