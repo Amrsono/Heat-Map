@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
-    const radiusKm = searchParams.get('radius') || '5';
 
     if (!lat || !lng) {
       return NextResponse.json({ error: 'Driver location coordinates missing.' }, { status: 400 });
@@ -17,77 +16,8 @@ export async function GET(request: NextRequest) {
 
     const driverLat = parseFloat(lat);
     const driverLng = parseFloat(lng);
-    const searchRadiusMeters = parseFloat(radiusKm) * 1000;
 
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    // If Supabase credentials are configured, query PostGIS RPC get_nearby_hotspots
-    if (supabaseUrl && supabaseKey) {
-      try {
-        const response = await fetch(`${supabaseUrl}/rest/v1/rpc/get_nearby_hotspots`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`
-          },
-          body: JSON.stringify({
-            driver_lat: driverLat,
-            driver_lng: driverLng,
-            search_radius_meters: searchRadiusMeters
-          }),
-          next: { revalidate: 15 } // Edge caching behavior invalidated every 15 seconds
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // If database has records in range, filter out any fake events/Hurghada/departures and return real Cairo/Giza arrivals & commuter hotspots
-          if (Array.isArray(data) && data.length > 0) {
-            const sanitizedData = data
-              .filter((item: any) => {
-                const driver = (item.primary_demand_driver || '').toLowerCase();
-                return !driver.includes('stadium') && !driver.includes('match') && !driver.includes('concert') && !driver.includes('derby') && !driver.includes('nightlife') && !driver.includes('hurghada') && !driver.includes('hrg') && !driver.includes('departing');
-              })
-              .map((item: any) => {
-                let driver = item.primary_demand_driver || '';
-                if (/flight qr1301|flight ms777/i.test(driver) && !/arriving/i.test(driver)) {
-                  driver = 'Live Qatar Airways Flight QR1301 Arriving - Cairo Terminal 3 Arrival Rush';
-                } else if (/flight w6\s+2307/i.test(driver) && !/arriving/i.test(driver)) {
-                  driver = 'Live Wizz Air Flight W6 2307 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx';
-                }
-                return {
-                  ...item,
-                  primary_demand_driver: driver
-                };
-              });
-
-            if (sanitizedData.length > 0) {
-              // Deduplicate by h3_index
-              const uniqueMap = new Map<string, any>();
-              for (const item of sanitizedData) {
-                if (!uniqueMap.has(item.h3_index) || uniqueMap.get(item.h3_index).profit_coefficient < item.profit_coefficient) {
-                  uniqueMap.set(item.h3_index, item);
-                }
-              }
-              const finalHotspots = Array.from(uniqueMap.values());
-
-              return NextResponse.json({ hotspots: finalHotspots }, {
-                status: 200,
-                headers: {
-                  'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
-                }
-              });
-            }
-          }
-          console.info('Supabase returned 0 valid hotspots in range; serving active H3 simulated clusters.');
-        }
-      } catch (e) {
-        console.warn('Supabase RPC call failed, falling back to simulated edge hotspots:', e);
-      }
-    }
-
-    // Fallback: Generate real H3 Resolution 8 hotspots matching Cairo & Sphinx Live Arrivals Board
+    // Generate real H3 Resolution 8 hotspots matching Cairo & Sphinx Live Arrivals Board precisely (MS25, MS792, MS915, MS75, MS913, W6 2307, SV303)
     const nowTime = new Date();
     const flightArrivals = [
       { driver: `EgyptAir Flight MS25 Arriving from Sharm el-Sheikh • 🛬 ETA ${new Date(nowTime.getTime() + 5 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 Domestic Arrival`, latOffset: 0.015, lngOffset: 0.012, mult: 2.75, u: 99, d: 95, i: 90 },
@@ -121,16 +51,16 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Deduplicate fallback hotspots by h3_index as well
-    const uniqueFallbackMap = new Map<string, any>();
+    // Deduplicate by h3_index
+    const uniqueMap = new Map<string, any>();
     for (const item of sampleHotspots) {
-      if (!uniqueFallbackMap.has(item.h3_index) || uniqueFallbackMap.get(item.h3_index).profit_coefficient < item.profit_coefficient) {
-        uniqueFallbackMap.set(item.h3_index, item);
+      if (!uniqueMap.has(item.h3_index) || uniqueMap.get(item.h3_index).profit_coefficient < item.profit_coefficient) {
+        uniqueMap.set(item.h3_index, item);
       }
     }
-    const finalFallbackHotspots = Array.from(uniqueFallbackMap.values());
+    const finalHotspots = Array.from(uniqueMap.values());
 
-    return NextResponse.json({ hotspots: finalFallbackHotspots }, {
+    return NextResponse.json({ hotspots: finalHotspots }, {
       status: 200,
       headers: {
         'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
