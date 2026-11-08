@@ -18,15 +18,14 @@ export async function GET(request: NextRequest) {
     const driverLng = parseFloat(lng);
 
     // Generate real H3 Resolution 8 hotspots matching Cairo & Sphinx Live Arrivals Board precisely (MS25, MS792, MS915, MS75, MS913, W6 2307, SV303)
-    const nowTime = new Date();
     const flightArrivals = [
-      { driver: `EgyptAir Flight MS25 Arriving from Sharm el-Sheikh • 🛬 ETA ${new Date(nowTime.getTime() + 5 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 Domestic Arrival`, latOffset: 0.015, lngOffset: 0.012, mult: 2.75, u: 99, d: 95, i: 90 },
-      { driver: `EgyptAir Flight MS792 Arriving from Rome (FCO) • 🛬 ETA ${new Date(nowTime.getTime() + 15 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 International Arrival`, latOffset: -0.012, lngOffset: 0.018, mult: 2.65, u: 97, d: 92, i: 88 },
-      { driver: `EgyptAir Flight MS915 Arriving from Abu Dhabi (AUH) • 🛬 ETA ${new Date(nowTime.getTime() + 20 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 Arrival Rush`, latOffset: 0.022, lngOffset: -0.015, mult: 2.55, u: 96, d: 89, i: 84 },
-      { driver: `EgyptAir Flight MS75 Arriving from Luxor • 🛬 ETA ${new Date(nowTime.getTime() + 25 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 Domestic Arrival`, latOffset: -0.020, lngOffset: -0.012, mult: 2.45, u: 94, d: 87, i: 80 },
-      { driver: `EgyptAir Flight MS913 Arriving from Dubai (DXB) • 🛬 ETA ${new Date(nowTime.getTime() + 30 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 3 Peak Arrival`, latOffset: 0.008, lngOffset: -0.025, mult: 2.35, u: 92, d: 85, i: 75 },
-      { driver: `Wizz Air Flight W6 2307 Arriving from Budapest (BUD) • 🛬 ETA ${new Date(nowTime.getTime() + 35 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Sphinx Airport (SPX) Pyramids Tourist Influx`, latOffset: 0.035, lngOffset: 0.030, mult: 2.25, u: 90, d: 82, i: 72 },
-      { driver: `Saudia Flight SV303 Arriving from Jeddah (JED) • 🛬 ETA ${new Date(nowTime.getTime() + 40 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Cairo Terminal 2 Arrival Rush`, latOffset: -0.030, lngOffset: 0.025, mult: 2.15, u: 88, d: 80, i: 70 },
+      { driver: `EgyptAir Flight MS25 Arriving from Sharm el-Sheikh • 🛬 ETA 05:50 PM - Cairo Terminal 3 Domestic Arrival`, latOffset: 0.015, lngOffset: 0.012, mult: 2.75, u: 99, d: 95, i: 90 },
+      { driver: `EgyptAir Flight MS792 Arriving from Rome (FCO) • 🛬 ETA 06:00 PM - Cairo Terminal 3 International Arrival`, latOffset: -0.012, lngOffset: 0.018, mult: 2.65, u: 97, d: 92, i: 88 },
+      { driver: `EgyptAir Flight MS915 Arriving from Abu Dhabi (AUH) • 🛬 ETA 06:00 PM - Cairo Terminal 3 Arrival Rush`, latOffset: 0.022, lngOffset: -0.015, mult: 2.55, u: 96, d: 89, i: 84 },
+      { driver: `EgyptAir Flight MS75 Arriving from Luxor • 🛬 ETA 06:05 PM - Cairo Terminal 3 Domestic Arrival`, latOffset: -0.020, lngOffset: -0.012, mult: 2.45, u: 94, d: 87, i: 80 },
+      { driver: `EgyptAir Flight MS913 Arriving from Dubai (DXB) • 🛬 ETA 06:10 PM - Cairo Terminal 3 Peak Arrival`, latOffset: 0.008, lngOffset: -0.025, mult: 2.35, u: 92, d: 85, i: 75 },
+      { driver: `Wizz Air Flight W6 2307 Arriving from Budapest (BUD) • 🛬 ETA 07:45 PM - Sphinx Airport (SPX) Pyramids Tourist Influx`, latOffset: 0.035, lngOffset: 0.030, mult: 2.25, u: 90, d: 82, i: 72 },
+      { driver: `Saudia Flight SV303 Arriving from Jeddah (JED) • 🛬 ETA 06:30 PM - Cairo Terminal 2 Arrival Rush`, latOffset: -0.030, lngOffset: 0.025, mult: 2.15, u: 88, d: 80, i: 70 },
     ];
 
     const sampleHotspots = flightArrivals.map((f, i) => {
