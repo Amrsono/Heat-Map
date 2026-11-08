@@ -197,10 +197,17 @@ export default function MapWrapper({
     };
   }, []);
 
-  // Update Driver Marker
+  // Update Driver Marker & Fly Map to Location
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !driverLocation) return;
+
+    // Smoothly fly map to user's location
+    map.flyTo({
+      center: [driverLocation.lng, driverLocation.lat],
+      zoom: 13.5,
+      essential: true
+    });
 
     if (!driverMarkerRef.current) {
       // Create custom pulsing driver vehicle marker
