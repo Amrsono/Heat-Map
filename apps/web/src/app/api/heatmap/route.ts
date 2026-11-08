@@ -42,19 +42,18 @@ export async function GET(request: NextRequest) {
 
         if (response.ok) {
           const data = await response.json();
-          // If database has records in range, filter out any fake matches/concerts and return real transport/flight/commuter hotspots
+          // If database has records in range, filter out any fake events/Hurghada/departures and return real Cairo/Giza arrivals & commuter hotspots
           if (Array.isArray(data) && data.length > 0) {
             const sanitizedData = data
               .filter((item: any) => {
                 const driver = (item.primary_demand_driver || '').toLowerCase();
-                // Exclude any fake matches, stadium events, concerts, or nightlife
-                return !driver.includes('stadium') && !driver.includes('match') && !driver.includes('concert') && !driver.includes('derby') && !driver.includes('nightlife');
+                return !driver.includes('stadium') && !driver.includes('match') && !driver.includes('concert') && !driver.includes('derby') && !driver.includes('nightlife') && !driver.includes('hurghada') && !driver.includes('hrg') && !driver.includes('departing');
               })
               .map((item: any) => {
                 let driver = item.primary_demand_driver || '';
-                if (/flight ms777\s+landed/i.test(driver)) {
-                  driver = 'Live Widebody Flight MS777 Arriving Now - Cairo Terminal 3 Arrival Rush';
-                } else if (/flight w6\s+5123\s+landed/i.test(driver)) {
+                if (/flight ms777/i.test(driver) && !/arriving/i.test(driver)) {
+                  driver = 'Live Widebody Flight MS777 Arriving - Cairo Terminal 3 Arrival Rush';
+                } else if (/flight w6\s+5123/i.test(driver) && !/arriving/i.test(driver)) {
                   driver = 'Live Flight W6 5123 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx';
                 }
                 return {

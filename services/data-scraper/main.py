@@ -74,6 +74,13 @@ def fetch_live_flight_arrivals():
                 if res.status_code == 200:
                     data = res.json().get("data", [])
                     for f in data:
+                        arr_iata = f.get("arrival", {}).get("iata", "").upper()
+                        arr_airport = (f.get("arrival", {}).get("airport") or "").lower()
+
+                        # Strict filtering: Only flights arriving to Cairo (CAI) or Sphinx (SPX), strictly excluding Hurghada (HRG) or others
+                        if arr_iata not in ["CAI", "SPX"] or "hurghada" in arr_airport or "hrg" in arr_airport:
+                            continue
+
                         airline = f.get("airline", {}).get("name", "Commercial")
                         flight_num = f.get("flight", {}).get("iata") or f.get("flight", {}).get("number", "Flight")
                         origin = f.get("departure", {}).get("airport", "International Departure")
@@ -94,7 +101,7 @@ def fetch_live_flight_arrivals():
                                 eta_str = f" • 🛬 ETA {arr_raw[11:16]}"
 
                         arrivals.append({
-                            "event": f"Flight {airline} {flight_num} from {origin}{eta_str} ({airport_code} - {status})",
+                            "event": f"Live Flight {airline} {flight_num} Arriving from {origin}{eta_str} ({airport_code} Arrival - {status})",
                             "volume_weight": pax_est,
                             "latitude": coords["lat"],
                             "longitude": coords["lng"],
