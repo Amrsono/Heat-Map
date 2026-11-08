@@ -55,7 +55,7 @@ def run_vertex_ai_inference_pipeline():
 
     # 2. Monitored metropolitan transit nodes (Real Transit, Airports, and Commuter Hubs Only - Zero Fake Events)
     candidate_centers = [
-        {"name": "Cairo Airport Terminal 3 Hub", "lat": 30.1219, "lng": 31.4056, "driver": "Live Widebody Flight MS777 Arriving Now - Terminal 3 Peak"},
+        {"name": "Cairo Airport Terminal 3 Hub", "lat": 30.1219, "lng": 31.4056, "driver": "Live Qatar Airways Flight QR1301 Arriving Now - Cairo Terminal 3 Arrival Rush"},
         {"name": "Sphinx International Airport (SPX)", "lat": 30.1147, "lng": 30.8992, "driver": "Live International Flight W6 5123 Arriving - Giza Pyramids Tourist Outflow"},
         {"name": "Cairo Airport Terminal 2 International", "lat": 30.1190, "lng": 31.4010, "driver": "Live Airbus A380 Flight EK927 Arriving - Terminal 2 Influx"},
         {"name": "Downtown Tahrir Central Hub", "lat": 30.0444, "lng": 31.2357, "driver": "Live Metro Commuter & Evening Commercial Influx Surge"},

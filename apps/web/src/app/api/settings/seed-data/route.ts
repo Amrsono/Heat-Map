@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         active_uber_demand_score: 96,
         active_didi_demand_score: 89,
         active_indrive_demand_score: 79,
-        primary_demand_driver: 'Live EgyptAir Flight MS777 Arriving from New York (JFK) - Cairo Terminal 3 Arrival Rush',
+        primary_demand_driver: 'Live Qatar Airways Flight QR1301 Arriving from Doha (DOH) - Cairo Terminal 3 Arrival Rush',
         updated_at: nowIso,
       },
       {

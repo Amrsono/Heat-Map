@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
               })
               .map((item: any) => {
                 let driver = item.primary_demand_driver || '';
-                if (/flight ms777/i.test(driver) && !/arriving/i.test(driver)) {
-                  driver = 'Live Widebody Flight MS777 Arriving - Cairo Terminal 3 Arrival Rush';
+                if (/flight qr1301|flight ms777/i.test(driver) && !/arriving/i.test(driver)) {
+                  driver = 'Live Qatar Airways Flight QR1301 Arriving - Cairo Terminal 3 Arrival Rush';
                 } else if (/flight w6\s+2307/i.test(driver) && !/arriving/i.test(driver)) {
                   driver = 'Live Wizz Air Flight W6 2307 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx';
                 }
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     const eta3 = new Date(nowTime.getTime() + 40 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const mockDrivers = [
-      `EgyptAir Flight MS777 Arriving from JFK • 🛬 ETA ${eta1} - Cairo International Terminal 3 Arrival Rush`,
+      `Qatar Airways Flight QR1301 Arriving from Doha • 🛬 ETA ${eta1} - Cairo International Terminal 3 Arrival Rush`,
       `Wizz Air Flight W6 2307 Arriving from Budapest • 🛬 ETA ${eta2} - Sphinx Airport (SPX) Pyramids Influx`,
       `Emirates Flight EK927 Arriving from Dubai • 🛬 ETA ${eta3} - Cairo International Terminal 2 International Arrival`,
       `Metro Central Hub Commuter Peak • Active Transit Influx`,

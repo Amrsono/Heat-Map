@@ -126,7 +126,7 @@ def fetch_live_flight_arrivals():
 
     arrivals = [
         {
-            "event": f"EgyptAir Boeing 777 Flight MS777 Arriving from New York (JFK) • 🛬 ETA {eta1} - Cairo Terminal 3 Arrival Rush",
+            "event": f"Qatar Airways Flight QR1301 Arriving from Doha (DOH) • 🛬 ETA {eta1} - Cairo Terminal 3 Arrival Rush",
             "volume_weight": 310,  # 310 passengers exiting customs
             "latitude": t3["lat"],
             "longitude": t3["lng"],

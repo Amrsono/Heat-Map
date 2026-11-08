@@ -241,7 +241,7 @@ export default function ProfitDashboard({
                       let etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
                       let etaTime = etaMatch ? etaMatch[1] : null;
 
-                      if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|ms777/i.test(raw))) {
+                      if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|qr1301/i.test(raw))) {
                         const timeMatch = raw.match(/(\d{1,2}:\d{2})/);
                         if (timeMatch) {
                           etaTime = timeMatch[1];
@@ -398,7 +398,7 @@ export default function ProfitDashboard({
                         let etaMatch = etaRaw?.match(/(?:🛬\s*)?ETA\s+(\d{1,2}:\d{2}\s*[AP]M)/i);
                         let etaTime = etaMatch ? etaMatch[1] : null;
 
-                        if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|ms777/i.test(raw))) {
+                        if (!etaTime && (/flight|arriving|arrival|landed|airport|wizz|aviation|ek927|qr1301/i.test(raw))) {
                           const timeMatch = raw.match(/(\d{1,2}:\d{2})/);
                           if (timeMatch) {
                             etaTime = timeMatch[1];
