@@ -230,9 +230,10 @@ export default function ProfitDashboard({
                     </span>
                     <span className="text-[11px] text-zinc-400">
                       {(() => {
-                        const destCoords = getNavigationCoordinates(selectedHotspot);
+                        const targetLat = selectedHotspot.latitude ?? driverLocation?.lat ?? 30.0444;
+                        const targetLng = selectedHotspot.longitude ?? driverLocation?.lng ?? 31.2357;
                         const distMeters = driverLocation
-                          ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, destCoords.lat, destCoords.lng)
+                          ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, targetLat, targetLng)
                           : (selectedHotspot.distance_meters || 1200);
                         return `${(distMeters / 1000).toFixed(1)} km away`;
                       })()}
@@ -435,9 +436,10 @@ export default function ProfitDashboard({
                         </span>
                         <span>
                           {(() => {
-                            const destCoords = getNavigationCoordinates(item);
+                            const targetLat = item.latitude ?? driverLocation?.lat ?? 30.0444;
+                            const targetLng = item.longitude ?? driverLocation?.lng ?? 31.2357;
                             const distMeters = driverLocation
-                              ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, destCoords.lat, destCoords.lng)
+                              ? calculateDistanceMeters(driverLocation.lat, driverLocation.lng, targetLat, targetLng)
                               : (item.distance_meters || 1200);
                             return `${(distMeters / 1000).toFixed(1)} km`;
                           })()}
