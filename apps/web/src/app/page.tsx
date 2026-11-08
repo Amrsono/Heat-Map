@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import ProfitDashboard from '@/components/ProfitDashboard';
+import SJSplashScreen from '@/components/SJSplashScreen';
 import { HotspotRecord } from '@/lib/h3-utils';
 import { supabase } from '@/lib/supabase-client';
 import { loadSettings } from '@/lib/settings-store';
@@ -40,6 +41,7 @@ export default function DriverMapPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRealtimeActive, setIsRealtimeActive] = useState<boolean>(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
 
   // Fetch hotspots from Edge API Route
   const fetchHotspots = useCallback(async () => {
@@ -147,6 +149,7 @@ export default function DriverMapPage() {
 
   return (
     <main className="relative w-screen h-screen overflow-hidden flex flex-col md:flex-row bg-[#090d16]">
+      {showSplash && <SJSplashScreen onFinished={() => setShowSplash(false)} />}
       {/* Map Section (Mobile: full, Desktop: 68%) */}
       <section className="relative w-full h-full md:w-[68%] lg:w-[72%] flex-1">
         <MapWrapper
