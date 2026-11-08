@@ -28,8 +28,8 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   supabaseServiceRoleKey: '',
 
   gcpProjectId: 'rideshare-profit-prod',
@@ -58,7 +58,13 @@ export function loadSettings(): AppSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_SETTINGS,
+      ...parsed,
+      supabaseUrl: parsed.supabaseUrl || DEFAULT_SETTINGS.supabaseUrl,
+      supabaseAnonKey: parsed.supabaseAnonKey || DEFAULT_SETTINGS.supabaseAnonKey,
+    };
   } catch (e) {
     console.error('Failed to load settings from localStorage:', e);
     return DEFAULT_SETTINGS;

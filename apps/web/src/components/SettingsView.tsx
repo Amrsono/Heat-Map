@@ -97,7 +97,10 @@ export default function SettingsView({ onClose }: SettingsViewProps) {
   };
 
   const testSupabaseConnection = async () => {
-    if (!settings.supabaseUrl) {
+    const url = settings.supabaseUrl || DEFAULT_SETTINGS.supabaseUrl;
+    const key = settings.supabaseServiceRoleKey || settings.supabaseAnonKey || DEFAULT_SETTINGS.supabaseAnonKey;
+
+    if (!url) {
       setTestStatus({
         loading: false,
         success: false,
@@ -111,8 +114,8 @@ export default function SettingsView({ onClose }: SettingsViewProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          supabaseUrl: settings.supabaseUrl,
-          supabaseKey: settings.supabaseServiceRoleKey || settings.supabaseAnonKey,
+          supabaseUrl: url,
+          supabaseKey: key,
         }),
       });
       const data = await res.json();

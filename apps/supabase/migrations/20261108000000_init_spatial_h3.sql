@@ -1,16 +1,16 @@
 -- apps/supabase/migrations/20261108000000_init_spatial_h3.sql
 
--- Enable PostGIS geospatial tracking extension
+-- 1. Enable PostGIS geospatial tracking extension
 CREATE EXTENSION IF NOT EXISTS postgis;
 
--- Create standardized H3 spatial indexing lookup tables
+-- 2. Create standardized H3 spatial indexing lookup tables
 CREATE TABLE IF NOT EXISTS public.urban_hex_grids (
     h3_index VARCHAR(15) PRIMARY KEY, -- Uber H3 Resolution 8 Hex Identifier
     centroid GEOMETRY(Point, 4326),   -- Center point geographic geometry
     city_zone VARCHAR(100) NOT NULL
 );
 
--- Main Hotspot & Multiplier tracking table 
+-- 3. Main Hotspot & Multiplier tracking table 
 CREATE TABLE IF NOT EXISTS public.live_profit_hotspots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     h3_index VARCHAR(15) REFERENCES public.urban_hex_grids(h3_index) ON DELETE CASCADE,
@@ -22,13 +22,17 @@ CREATE TABLE IF NOT EXISTS public.live_profit_hotspots (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Indexing strategies for lightning-fast edge retrieval
+-- 4. Indexing strategies for lightning-fast edge retrieval
 CREATE INDEX IF NOT EXISTS idx_hex_grids_centroid ON public.urban_hex_grids USING GIST (centroid);
 CREATE INDEX IF NOT EXISTS idx_live_hotspots_coefficient ON public.live_profit_hotspots (profit_coefficient DESC) WHERE profit_coefficient > 1.2;
 
--- Enable Row Level Security (RLS)
+-- 5. Enable Row Level Security (RLS)
 ALTER TABLE public.urban_hex_grids ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.live_profit_hotspots ENABLE ROW LEVEL SECURITY;
+
+-- Drop previous policies if re-running to avoid duplicate errors
+DROP POLICY IF EXISTS "Allow public read urban_hex_grids" ON public.urban_hex_grids;
+DROP POLICY IF EXISTS "Allow public read live_profit_hotspots" ON public.live_profit_hotspots;
 
 -- Read policies: allow public anonymous or authenticated driver clients to query heatmaps
 CREATE POLICY "Allow public read urban_hex_grids" 
@@ -37,7 +41,7 @@ CREATE POLICY "Allow public read urban_hex_grids"
 CREATE POLICY "Allow public read live_profit_hotspots" 
     ON public.live_profit_hotspots FOR SELECT USING (true);
 
--- Stored Procedure (RPC) to retrieve nearby hotspots sorted by profit multiplier
+-- 6. Stored Procedure (RPC) to retrieve nearby hotspots sorted by profit multiplier
 CREATE OR REPLACE FUNCTION public.get_nearby_hotspots(
     driver_lat DOUBLE PRECISION,
     driver_lng DOUBLE PRECISION,
@@ -87,7 +91,7 @@ AS $$
     ORDER BY h.profit_coefficient DESC, distance_meters ASC;
 $$;
 
--- Enable Supabase Realtime functionality on our hotspot updates table
+-- 7. Enable Supabase Realtime functionality on our hotspot updates table
 DO $$
 BEGIN
     IF NOT EXISTS (
