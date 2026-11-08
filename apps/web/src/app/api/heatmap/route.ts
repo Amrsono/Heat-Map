@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
                 let driver = item.primary_demand_driver || '';
                 if (/flight ms777/i.test(driver) && !/arriving/i.test(driver)) {
                   driver = 'Live Widebody Flight MS777 Arriving - Cairo Terminal 3 Arrival Rush';
-                } else if (/flight w6\s+5123/i.test(driver) && !/arriving/i.test(driver)) {
-                  driver = 'Live Flight W6 5123 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx';
+                } else if (/flight w6\s+2307/i.test(driver) && !/arriving/i.test(driver)) {
+                  driver = 'Live Wizz Air Flight W6 2307 Arriving - Sphinx Airport (SPX) Pyramids Tourist Influx';
                 }
                 return {
                   ...item,
@@ -63,7 +63,16 @@ export async function GET(request: NextRequest) {
               });
 
             if (sanitizedData.length > 0) {
-              return NextResponse.json({ hotspots: sanitizedData }, {
+              // Deduplicate by h3_index
+              const uniqueMap = new Map<string, any>();
+              for (const item of sanitizedData) {
+                if (!uniqueMap.has(item.h3_index) || uniqueMap.get(item.h3_index).profit_coefficient < item.profit_coefficient) {
+                  uniqueMap.set(item.h3_index, item);
+                }
+              }
+              const finalHotspots = Array.from(uniqueMap.values());
+
+              return NextResponse.json({ hotspots: finalHotspots }, {
                 status: 200,
                 headers: {
                   'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
@@ -123,7 +132,16 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({ hotspots: sampleHotspots }, {
+    // Deduplicate fallback hotspots by h3_index as well
+    const uniqueFallbackMap = new Map<string, any>();
+    for (const item of sampleHotspots) {
+      if (!uniqueFallbackMap.has(item.h3_index) || uniqueFallbackMap.get(item.h3_index).profit_coefficient < item.profit_coefficient) {
+        uniqueFallbackMap.set(item.h3_index, item);
+      }
+    }
+    const finalFallbackHotspots = Array.from(uniqueFallbackMap.values());
+
+    return NextResponse.json({ hotspots: finalFallbackHotspots }, {
       status: 200,
       headers: {
         'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
