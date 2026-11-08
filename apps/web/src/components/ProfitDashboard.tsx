@@ -70,15 +70,23 @@ export default function ProfitDashboard({
   };
 
   const handleCheckStatus = (hotspot: HotspotRecord) => {
-    const flightNum = extractFlightNumber(hotspot);
-    const query = encodeURIComponent(`flight ${flightNum} status`);
-    window.open(`https://www.google.com/search?q=${query}`, '_blank');
+    const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
+    const isSphinx = driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6');
+    const airportCode = isSphinx ? 'spx' : 'cai';
+    window.open(`https://www.flightradar24.com/data/airports/${airportCode}/arrivals`, '_blank');
   };
 
   const handleTrackFlight = (hotspot: HotspotRecord) => {
     const flightNum = extractFlightNumber(hotspot);
-    const query = encodeURIComponent(`track flight ${flightNum} flightradar24`);
-    window.open(`https://www.google.com/search?q=${query}`, '_blank');
+    const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
+    const isSphinx = driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6');
+    const airportCode = isSphinx ? 'spx' : 'cai';
+
+    if (flightNum && flightNum !== 'Flight') {
+      window.open(`https://www.flightradar24.com/data/flights/${flightNum.toLowerCase()}`, '_blank');
+    } else {
+      window.open(`https://www.flightradar24.com/data/airports/${airportCode}`, '_blank');
+    }
   };
 
   return (
