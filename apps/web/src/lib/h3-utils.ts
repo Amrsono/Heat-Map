@@ -84,6 +84,29 @@ export function getBestPlatform(item: HotspotRecord): 'Uber' | 'DiDi' | 'inDrive
 }
 
 /**
+ * Resolves precise airport terminal coordinates for flight notifications,
+ * or falls back to hotspot coordinates for standard zones.
+ */
+export function getNavigationCoordinates(hotspot: HotspotRecord): { lat: number; lng: number } {
+  const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
+
+  if (driver.includes('sphinx') || driver.includes('spx') || driver.includes('w6') || driver.includes('pyramids tourist')) {
+    return { lat: 30.1147, lng: 30.8992 }; // Sphinx International Airport (SPX)
+  }
+  if (driver.includes('terminal 2') || driver.includes('ek927')) {
+    return { lat: 30.1190, lng: 31.4010 }; // Cairo Airport Terminal 2
+  }
+  if (driver.includes('terminal 3') || driver.includes('ms777') || driver.includes('airport') || driver.includes('flight') || driver.includes('aviation')) {
+    return { lat: 30.1219, lng: 31.4056 }; // Cairo Airport Terminal 3
+  }
+
+  return {
+    lat: hotspot.latitude ?? 30.0444,
+    lng: hotspot.longitude ?? 31.2357,
+  };
+}
+
+/**
  * Converts a list of Hotspot records into GeoJSON FeatureCollection
  * of H3 Resolution 8 hexagons.
  */

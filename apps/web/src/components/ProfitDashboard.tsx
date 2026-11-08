@@ -16,7 +16,7 @@ import {
   Sliders,
   Radar,
 } from 'lucide-react';
-import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform } from '@/lib/h3-utils';
+import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates } from '@/lib/h3-utils';
 import { loadSettings } from '@/lib/settings-store';
 import SettingsView from '@/components/SettingsView';
 
@@ -53,14 +53,15 @@ export default function ProfitDashboard({
   const bestPlatform = topHotspot ? getBestPlatform(topHotspot) : 'Uber';
 
   const handleNavigate = (hotspot: HotspotRecord) => {
-    if (!hotspot.latitude || !hotspot.longitude) return;
+    const coords = getNavigationCoordinates(hotspot);
+    if (!coords.lat || !coords.lng) return;
     const { navigationApp } = loadSettings();
-    let url = `https://www.google.com/maps/dir/?api=1&destination=${hotspot.latitude},${hotspot.longitude}`;
+    let url = `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`;
     
     if (navigationApp === 'waze') {
-      url = `https://waze.com/ul?ll=${hotspot.latitude},${hotspot.longitude}&navigate=yes`;
+      url = `https://waze.com/ul?ll=${coords.lat},${coords.lng}&navigate=yes`;
     } else if (navigationApp === 'apple') {
-      url = `maps://?daddr=${hotspot.latitude},${hotspot.longitude}`;
+      url = `maps://?daddr=${coords.lat},${coords.lng}`;
     }
     window.open(url, '_blank');
   };
