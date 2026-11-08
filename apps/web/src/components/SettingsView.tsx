@@ -133,6 +133,28 @@ export default function SettingsView({ onClose }: SettingsViewProps) {
     }
   };
 
+  const handleSeedData = async () => {
+    setTestStatus({ loading: true, message: 'Seeding demo hotspots into Supabase...' });
+    try {
+      const res = await fetch('/api/settings/seed-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supabaseUrl: settings.supabaseUrl || DEFAULT_SETTINGS.supabaseUrl,
+          supabaseKey: settings.supabaseServiceRoleKey || settings.supabaseAnonKey || DEFAULT_SETTINGS.supabaseAnonKey,
+        }),
+      });
+      const data = await res.json();
+      setTestStatus({
+        loading: false,
+        success: data.ok,
+        message: data.ok ? data.message : data.error || 'Failed to seed demo data.',
+      });
+    } catch (e: any) {
+      setTestStatus({ loading: false, success: false, message: e?.message || 'Failed to seed data.' });
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#0d121f] text-slate-100 overflow-y-auto">
       {/* Top Banner Actions */}
@@ -182,14 +204,26 @@ export default function SettingsView({ onClose }: SettingsViewProps) {
               </div>
             </div>
 
-            <button
-              onClick={testSupabaseConnection}
-              disabled={testStatus.loading}
-              className="px-2.5 py-1 text-xs rounded-lg bg-[#1e2a42] hover:bg-[#253554] border border-white/10 text-emerald-300 flex items-center gap-1.5 transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3 h-3 ${testStatus.loading ? 'animate-spin' : ''}`} />
-              Test Connection
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSeedData}
+                disabled={testStatus.loading}
+                title="Populate your Supabase tables with sample Cairo metro surge hotspots"
+                className="px-2.5 py-1 text-xs rounded-lg bg-[#172033] hover:bg-[#1e2a42] border border-emerald-500/30 text-emerald-300 flex items-center gap-1.5 transition-all disabled:opacity-50"
+              >
+                <Database className="w-3 h-3 text-emerald-400" />
+                Seed Sample Data
+              </button>
+
+              <button
+                onClick={testSupabaseConnection}
+                disabled={testStatus.loading}
+                className="px-2.5 py-1 text-xs rounded-lg bg-[#1e2a42] hover:bg-[#253554] border border-white/10 text-emerald-300 flex items-center gap-1.5 transition-all disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3 h-3 ${testStatus.loading ? 'animate-spin' : ''}`} />
+                Test Connection
+              </button>
+            </div>
           </div>
 
           {testStatus.message && (

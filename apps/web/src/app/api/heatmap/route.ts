@@ -42,12 +42,16 @@ export async function GET(request: NextRequest) {
 
         if (response.ok) {
           const data = await response.json();
-          return NextResponse.json({ hotspots: data }, {
-            status: 200,
-            headers: {
-              'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
-            }
-          });
+          // If database has records in range, return them immediately
+          if (Array.isArray(data) && data.length > 0) {
+            return NextResponse.json({ hotspots: data }, {
+              status: 200,
+              headers: {
+                'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5'
+              }
+            });
+          }
+          console.info('Supabase returned 0 hotspots in range; serving active H3 simulated clusters.');
         }
       } catch (e) {
         console.warn('Supabase RPC call failed, falling back to simulated edge hotspots:', e);

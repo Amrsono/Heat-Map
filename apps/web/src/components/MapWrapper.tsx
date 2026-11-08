@@ -32,29 +32,40 @@ export default function MapWrapper({
     const initialLat = driverLocation?.lat || 30.0444; // Default to Cairo / Metro
     const initialLng = driverLocation?.lng || 31.2357;
 
-    // Dark vector basemap using Carto Dark Matter style
+    // Dark vector basemap using clean unwatermarked ArcGIS Dark Gray Canvas
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: {
         version: 8,
         sources: {
-          'carto-dark': {
+          'esri-dark-base': {
             type: 'raster',
             tiles: [
-              'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-              'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-              'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-              'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+              'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
             ],
             tileSize: 256,
-            attribution: '© OpenStreetMap contributors, © CARTO',
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+          },
+          'esri-dark-reference': {
+            type: 'raster',
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+            ],
+            tileSize: 256,
           },
         },
         layers: [
           {
-            id: 'carto-dark-layer',
+            id: 'esri-dark-base-layer',
             type: 'raster',
-            source: 'carto-dark',
+            source: 'esri-dark-base',
+            minzoom: 0,
+            maxzoom: 20,
+          },
+          {
+            id: 'esri-dark-reference-layer',
+            type: 'raster',
+            source: 'esri-dark-reference',
             minzoom: 0,
             maxzoom: 20,
           },
