@@ -128,7 +128,7 @@ export function calculateDistanceMeters(lat1: number, lon1: number, lat2: number
  */
 export function isFlightHotspot(hotspot: HotspotRecord): boolean {
   const driver = (hotspot.primary_demand_driver || hotspot.city_zone || '').toLowerCase();
-  return /flight|airline|aviation|qr\d+|ek\d+|w\d+|w9\d+|arriving|landed|scheduled/i.test(driver);
+  return /flight|airline|aviation|ms\d+|sv\d+|qr\d+|ek\d+|w\d+|w9\d+|arriving|landed|scheduled/i.test(driver);
 }
 
 /**
@@ -136,10 +136,7 @@ export function isFlightHotspot(hotspot: HotspotRecord): boolean {
  */
 export function extractFlightNumber(hotspot: HotspotRecord): string {
   const driver = hotspot.primary_demand_driver || '';
-  if (/qr1301/i.test(driver)) return 'QR1301';
-  if (/ek927/i.test(driver)) return 'EK927';
-  if (/w6\s*2307/i.test(driver)) return 'W62307';
-  const match = driver.match(/(?:flight[:\s]*|wizz\s+air\s*|qatar\s+airways\s*|emirates\s*)?([A-Z0-9]{2,4}\s*\d{2,5})/i);
+  const match = driver.match(/(?:flight[:\s]*|wizz\s+air\s*|egyptair\s*|saudia\s*|qatar\s+airways\s*|emirates\s*)?([A-Z0-9]{2,4}\s*\d{2,5})/i);
   return match ? match[1].trim() : 'Flight';
 }
 
