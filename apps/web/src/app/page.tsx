@@ -166,7 +166,7 @@ export default function DriverMapPage() {
   };
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden flex flex-col md:flex-row bg-[#090d16]">
+    <main className="relative w-screen h-[100dvh] overflow-hidden flex flex-col md:flex-row bg-[#090d16]">
       {showSplash && <SJSplashScreen onFinished={() => setShowSplash(false)} />}
       {/* Map Section (Mobile: full, Desktop: 68%) */}
       <section className="relative w-full h-full md:w-[68%] lg:w-[72%] flex-1">
@@ -187,7 +187,7 @@ export default function DriverMapPage() {
         />
 
         {/* Floating Quick Preset Location Selector */}
-        <div className="absolute top-4 right-14 z-10 flex items-center gap-1.5 backdrop-blur-md bg-black/60 border border-white/10 rounded-xl p-1.5 shadow-xl max-w-[calc(100vw-120px)] overflow-x-auto">
+        <div className="absolute top-[4.85rem] left-3 right-3 md:top-4 md:left-auto md:right-14 z-10 flex items-center gap-1.5 backdrop-blur-md bg-black/65 border border-white/10 rounded-xl p-1.5 shadow-xl md:max-w-[calc(100vw-120px)] overflow-x-auto">
           <MapPin className="w-3.5 h-3.5 text-zinc-400 ml-1 flex-shrink-0" />
           {DEMO_PRESETS.map((p) => (
             <button

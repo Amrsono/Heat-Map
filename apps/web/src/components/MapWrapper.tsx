@@ -394,8 +394,8 @@ export default function MapWrapper({
       </div>
 
       {/* Surge Heatmap Legend */}
-      <div className="absolute bottom-6 left-4 z-10 backdrop-blur-md bg-black/75 border border-white/10 rounded-xl p-3 shadow-2xl flex flex-col gap-1.5 text-xs">
-        <div className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider mb-1">
+      <div className="absolute bottom-20 left-3 md:bottom-6 md:left-4 z-10 backdrop-blur-md bg-black/75 border border-white/10 rounded-xl p-2 sm:p-3 shadow-2xl flex flex-col gap-1 sm:gap-1.5 text-[10px] sm:text-xs">
+        <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-300 uppercase tracking-wider mb-0.5 sm:mb-1">
           Surge Multiplier
         </div>
         <div className="flex items-center gap-2">
