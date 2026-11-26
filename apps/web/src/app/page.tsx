@@ -7,6 +7,7 @@ import SJSplashScreen from '@/components/SJSplashScreen';
 import { HotspotRecord } from '@/lib/h3-utils';
 import { supabase } from '@/lib/supabase-client';
 import { loadSettings } from '@/lib/settings-store';
+import type { AIRecommendation } from '@/lib/ai-insights-engine';
 import { Geolocation } from '@capacitor/geolocation';
 import { Locate, Menu, X, Sparkles, MapPin, Sliders } from 'lucide-react';
 
@@ -39,6 +40,8 @@ export default function DriverMapPage() {
   const [radiusKm, setRadiusKm] = useState<number>(5);
   const [hotspots, setHotspots] = useState<HotspotRecord[]>([]);
   const [selectedHotspot, setSelectedHotspot] = useState<HotspotRecord | null>(null);
+  const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>([]);
+  const [selectedAiTarget, setSelectedAiTarget] = useState<AIRecommendation | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRealtimeActive, setIsRealtimeActive] = useState<boolean>(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
@@ -178,6 +181,9 @@ export default function DriverMapPage() {
             }
           }}
           radiusKm={radiusKm}
+          aiRecommendations={aiRecommendations}
+          selectedAiTarget={selectedAiTarget}
+          onSelectAiTarget={setSelectedAiTarget}
         />
 
         {/* Floating Quick Preset Location Selector */}
@@ -232,6 +238,9 @@ export default function DriverMapPage() {
           onRefresh={fetchHotspots}
           isRealtimeActive={isRealtimeActive}
           driverLocation={driverLocation}
+          onAiRecommendationsLoaded={setAiRecommendations}
+          selectedAiTarget={selectedAiTarget}
+          onSelectAiTarget={setSelectedAiTarget}
         />
       </aside>
 
@@ -251,6 +260,12 @@ export default function DriverMapPage() {
           onRefresh={fetchHotspots}
           isRealtimeActive={isRealtimeActive}
           driverLocation={driverLocation}
+          onAiRecommendationsLoaded={setAiRecommendations}
+          selectedAiTarget={selectedAiTarget}
+          onSelectAiTarget={(rec) => {
+            setSelectedAiTarget(rec);
+            if (rec) setIsMobileDrawerOpen(false);
+          }}
         />
       </div>
     </main>

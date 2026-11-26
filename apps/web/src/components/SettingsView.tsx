@@ -18,6 +18,7 @@ import {
   Eye,
   EyeOff,
   RefreshCw,
+  Sparkles,
 } from 'lucide-react';
 import {
   AppSettings,
@@ -374,6 +375,90 @@ export default function SettingsView({ onClose }: SettingsViewProps) {
                 onChange={(e) => handleChange('useVertexAiSimulatedFallback', e.target.checked)}
                 className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2B: Gemini AI Profit Advisor & Live Grounding */}
+        <div className="bg-[#131a29] border border-violet-500/30 rounded-2xl p-4 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Gemini AI Profit Advisor (Uber &amp; DiDi)</h3>
+                <p className="text-[11px] text-zinc-400">
+                  Real-time Gemini AI recommendations combining live weather, flights, POIs &amp; optional Google Search grounding
+                </p>
+              </div>
+            </div>
+            <a
+              href="https://aistudio.google.com/apikey"
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1 text-[11px] rounded-lg bg-violet-500/15 hover:bg-violet-500/25 border border-violet-500/30 text-violet-300 flex items-center gap-1 transition-all"
+            >
+              Get Free Key <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-zinc-300">
+                  Google Gemini API Key (Optional if set on Vercel)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => toggleShowSecret('geminiKey')}
+                  className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1"
+                >
+                  {showSecrets.geminiKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  {showSecrets.geminiKey ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <input
+                type={showSecrets.geminiKey ? 'text' : 'password'}
+                placeholder="AIzaSy... (Leave blank to use server GEMINI_API_KEY or Smart Telemetry Engine)"
+                value={settings.geminiApiKey}
+                onChange={(e) => handleChange('geminiApiKey', e.target.value)}
+                className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-xs font-mono text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                  Default Target Platform
+                </label>
+                <select
+                  value={settings.preferredPlatform}
+                  onChange={(e) => handleChange('preferredPlatform', e.target.value)}
+                  className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer"
+                >
+                  <option value="both">Both (Uber + DiDi Dual-App)</option>
+                  <option value="uber">Uber Priority</option>
+                  <option value="didi">DiDi Priority</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5">
+                <div>
+                  <div className="text-xs font-semibold text-white">
+                    Google Search Grounding
+                  </div>
+                  <div className="text-[11px] text-zinc-400">
+                    Check live concerts, matches &amp; events
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.enableLiveSearchGrounding}
+                  onChange={(e) => handleChange('enableLiveSearchGrounding', e.target.checked)}
+                  className="w-4 h-4 accent-violet-500 rounded cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>

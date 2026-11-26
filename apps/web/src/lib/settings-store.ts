@@ -19,6 +19,11 @@ export interface AppSettings {
   didiPartnerClientId: string;
   inDrivePartnerClientId: string;
 
+  // AI Profit Advisor (Gemini + Live Grounding)
+  geminiApiKey: string;
+  enableLiveSearchGrounding: boolean;
+  preferredPlatform: 'both' | 'uber' | 'didi';
+
   // Driver Optimization Parameters
   defaultRadiusKm: number;
   minSurgeThreshold: number; // e.g. 1.5x
@@ -43,6 +48,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   uberPartnerClientId: '',
   didiPartnerClientId: '',
   inDrivePartnerClientId: '',
+
+  geminiApiKey: '',
+  enableLiveSearchGrounding: true,
+  preferredPlatform: 'both',
 
   defaultRadiusKm: 5,
   minSurgeThreshold: 1.5,

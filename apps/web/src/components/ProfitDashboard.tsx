@@ -16,10 +16,13 @@ import {
   Sliders,
   Radar,
   ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 import { HotspotRecord, getSurgeColor, getSurgeCategory, getBestPlatform, getNavigationCoordinates, calculateDistanceMeters, isFlightHotspot, extractFlightNumber } from '@/lib/h3-utils';
 import { loadSettings } from '@/lib/settings-store';
 import SettingsView from '@/components/SettingsView';
+import AIInsightsView from '@/components/AIInsightsView';
+import type { AIRecommendation } from '@/lib/ai-insights-engine';
 
 interface ProfitDashboardProps {
   hotspots: HotspotRecord[];
@@ -31,6 +34,9 @@ interface ProfitDashboardProps {
   onRefresh: () => void;
   isRealtimeActive: boolean;
   driverLocation?: { lat: number; lng: number };
+  onAiRecommendationsLoaded?: (recs: AIRecommendation[]) => void;
+  selectedAiTarget?: AIRecommendation | null;
+  onSelectAiTarget?: (rec: AIRecommendation | null) => void;
 }
 
 export default function ProfitDashboard({
@@ -43,8 +49,11 @@ export default function ProfitDashboard({
   onRefresh,
   isRealtimeActive,
   driverLocation,
+  onAiRecommendationsLoaded,
+  selectedAiTarget = null,
+  onSelectAiTarget,
 }: ProfitDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'radar' | 'settings'>('radar');
+  const [activeTab, setActiveTab] = useState<'radar' | 'ai' | 'settings'>('radar');
 
   // Sort hotspots by highest profit coefficient
   const sortedHotspots = [...hotspots].sort(
@@ -120,40 +129,83 @@ export default function ProfitDashboard({
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5">
+        <div className="grid grid-cols-3 gap-1 p-1 bg-black/40 rounded-xl border border-white/5">
           <button
             onClick={() => setActiveTab('radar')}
-            className={`py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-1.5 text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${
               activeTab === 'radar'
                 ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
             <Radar className="w-3.5 h-3.5" />
-            Radar HUD
+            Radar
+          </button>
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={`py-1.5 text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${
+              activeTab === 'ai'
+                ? 'bg-violet-500 text-white shadow-md shadow-violet-500/30'
+                : 'text-violet-300 hover:text-white hover:bg-violet-500/15'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            AI Advisor
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-1.5 text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${
               activeTab === 'settings'
                 ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
-            Settings & APIs
+            Settings
           </button>
         </div>
       </div>
 
-      {/* Tab 1: Settings View */}
+      {/* Tab Content */}
       {activeTab === 'settings' ? (
         <div className="flex-1 overflow-hidden">
           <SettingsView />
         </div>
+      ) : activeTab === 'ai' ? (
+        <div className="flex-1 overflow-hidden">
+          <AIInsightsView
+            driverLocation={driverLocation || { lat: 30.0444, lng: 31.2357 }}
+            radiusKm={radiusKm}
+            hotspots={hotspots}
+            onRecommendationsLoaded={onAiRecommendationsLoaded || (() => {})}
+            selectedAiTarget={selectedAiTarget}
+            onSelectAiTarget={onSelectAiTarget || (() => {})}
+            onOpenSettings={() => setActiveTab('settings')}
+          />
+        </div>
       ) : (
         /* Tab 2: Radar View */
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Quick Launch AI Insights CTA */}
+          <button
+            onClick={() => setActiveTab('ai')}
+            className="mx-3 mt-2.5 p-2.5 rounded-xl bg-gradient-to-r from-violet-600/25 via-indigo-600/20 to-emerald-500/20 hover:from-violet-600/35 hover:to-emerald-500/30 border border-violet-500/35 flex items-center justify-between text-left transition-all group"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-violet-500/25 border border-violet-400/40 flex items-center justify-center text-violet-300">
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div className="text-[11px] font-bold text-white">
+                  Where to Drive Now? (Uber &amp; DiDi AI)
+                </div>
+                <div className="text-[10px] text-violet-200/80">
+                  Live weather, venues, flights &amp; surge advice
+                </div>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-violet-300 group-hover:translate-x-0.5 transition-transform" />
+          </button>
           {/* Top Summary Metrics Cards */}
           <div className="p-3 border-b border-white/10 bg-[#111726]/40">
             <div className="grid grid-cols-3 gap-2">

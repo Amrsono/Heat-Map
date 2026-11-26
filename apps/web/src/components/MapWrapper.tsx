@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { HotspotRecord, hotspotsToGeoJSON, getSurgeColor } from '@/lib/h3-utils';
+import type { AIRecommendation } from '@/lib/ai-insights-engine';
 
 interface MapWrapperProps {
   driverLocation: { lat: number; lng: number } | null;
@@ -11,6 +12,18 @@ interface MapWrapperProps {
   selectedHotspot: HotspotRecord | null;
   onSelectHotspot: (hotspot: HotspotRecord | null) => void;
   radiusKm: number;
+  aiRecommendations?: AIRecommendation[];
+  selectedAiTarget?: AIRecommendation | null;
+  onSelectAiTarget?: (rec: AIRecommendation | null) => void;
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export default function MapWrapper({
@@ -19,10 +32,14 @@ export default function MapWrapper({
   selectedHotspot,
   onSelectHotspot,
   radiusKm,
+  aiRecommendations = [],
+  selectedAiTarget = null,
+  onSelectAiTarget,
 }: MapWrapperProps) {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const driverMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const aiMarkersRef = useRef<maplibregl.Marker[]>([]);
   const popupRef = useRef<maplibregl.Popup | null>(null);
 
   // Initialize Map
@@ -261,6 +278,101 @@ export default function MapWrapper({
       curve: 1.4,
     });
   }, [selectedHotspot]);
+
+  // Render AI Recommended Profit Target Markers
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    aiMarkersRef.current.forEach((m) => m.remove());
+    aiMarkersRef.current = [];
+
+    for (const rec of aiRecommendations) {
+      const isSelected =
+        selectedAiTarget?.rank === rec.rank &&
+        selectedAiTarget?.locationName === rec.locationName;
+
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'group relative flex items-center justify-center focus:outline-none';
+      el.title = `#${rec.rank} ${rec.locationName} (${rec.recommendedPlatform})`;
+      el.innerHTML = `
+        <div class="px-2 py-1 rounded-full font-mono text-[11px] font-black shadow-2xl border transition-transform ${
+          isSelected
+            ? 'bg-violet-500 text-white border-white scale-110 ring-4 ring-violet-400/40'
+            : 'bg-[#12182b]/95 text-violet-200 border-violet-400 hover:scale-105'
+        }">
+          ✦ #${rec.rank} ${escapeHtml(rec.recommendedPlatform === 'Uber + DiDi' ? 'U+D' : rec.recommendedPlatform)}
+        </div>
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (onSelectAiTarget) onSelectAiTarget(rec);
+
+        if (popupRef.current) popupRef.current.remove();
+        const popup = new maplibregl.Popup({ closeButton: true, offset: 18 })
+          .setLngLat([rec.lng, rec.lat])
+          .setHTML(`
+            <div class="space-y-1.5 font-sans max-w-[240px]">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-violet-500/25 text-violet-300 font-bold">
+                  AI TARGET #${rec.rank}
+                </span>
+                <span class="text-[11px] font-bold text-emerald-400">${escapeHtml(rec.estimatedSurge)}</span>
+              </div>
+              <div class="text-xs font-bold text-white">${escapeHtml(rec.locationName)}</div>
+              <div class="text-[11px] text-amber-300 font-semibold">${escapeHtml(rec.recommendedPlatform)} • ${rec.distanceKm} km (~${rec.driveTimeMins}m)</div>
+              <div class="text-[11px] text-zinc-300 leading-snug">${escapeHtml(rec.stagingAdvice)}</div>
+            </div>
+          `)
+          .addTo(map);
+        popupRef.current = popup;
+      });
+
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([rec.lng, rec.lat])
+        .addTo(map);
+      aiMarkersRef.current.push(marker);
+    }
+
+    return () => {
+      aiMarkersRef.current.forEach((m) => m.remove());
+      aiMarkersRef.current = [];
+    };
+  }, [aiRecommendations, selectedAiTarget, onSelectAiTarget]);
+
+  // Fly to selected AI target and open its popup
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !selectedAiTarget) return;
+
+    map.flyTo({
+      center: [selectedAiTarget.lng, selectedAiTarget.lat],
+      zoom: 13.8,
+      speed: 1.25,
+      curve: 1.35,
+    });
+
+    if (popupRef.current) popupRef.current.remove();
+    const popup = new maplibregl.Popup({ closeButton: true, offset: 18 })
+      .setLngLat([selectedAiTarget.lng, selectedAiTarget.lat])
+      .setHTML(`
+        <div class="space-y-1.5 font-sans max-w-[240px]">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-violet-500/25 text-violet-300 font-bold">
+              AI TARGET #${selectedAiTarget.rank}
+            </span>
+            <span class="text-[11px] font-bold text-emerald-400">${escapeHtml(selectedAiTarget.estimatedSurge)}</span>
+          </div>
+          <div class="text-xs font-bold text-white">${escapeHtml(selectedAiTarget.locationName)}</div>
+          <div class="text-[11px] text-amber-300 font-semibold">${escapeHtml(selectedAiTarget.recommendedPlatform)} • ${selectedAiTarget.distanceKm} km (~${selectedAiTarget.driveTimeMins}m)</div>
+          <div class="text-[11px] text-zinc-300 leading-snug">${escapeHtml(selectedAiTarget.stagingAdvice)}</div>
+        </div>
+      `)
+      .addTo(map);
+    popupRef.current = popup;
+  }, [selectedAiTarget]);
 
   return (
     <div className="relative w-full h-full min-h-[480px] bg-slate-950 overflow-hidden">
